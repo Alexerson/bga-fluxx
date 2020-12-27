@@ -28,41 +28,41 @@ require_once APP_BASE_PATH . "view/common/game.view.php";
 
 class view_fluxx_fluxx extends game_view
 {
-  public function getGameName()
-  {
-    return "fluxx";
-  }
-  public function build_page($viewArgs)
-  {
-    $template = self::getGameName() . "_" . self::getGameName();
-
-    // Get current player ID & all players info
-    global $g_user;
-    $current_player_id = $g_user->get_id();
-    $players = $this->game->loadPlayersBasicInfos();
-
-    // Translations
-    $this->tpl["MY_HAND"] = clienttranslate("My hand");
-    $this->tpl["MY_KEEPERS"] = clienttranslate("My keepers");
-    $this->tpl["HAND_COUNT"] = clienttranslate("# cards in hand");
-    $this->tpl["KEEPERS_COUNT"] = clienttranslate("# keepers on table");
-    $this->tpl["RULES"] = clienttranslate("Rules");
-    $this->tpl["GOAL"] = clienttranslate("Goal");
-
-    // This will inflate players keepers block
-    $player_info = $players[$current_player_id];
-    $this->tpl["CURRENT_PLAYER_ID"] = $current_player_id;
-    $this->tpl["CURRENT_PLAYER_COLOR"] = $player_info["player_color"];
-
-    $this->page->begin_block($template, "keepers");
-    foreach ($players as $player_id => $player_info) {
-      if ($player_id != $current_player_id) {
-        $this->page->insert_block("keepers", [
-          "PLAYER_ID" => $player_id,
-          "PLAYER_NAME" => $player_info["player_name"],
-          "PLAYER_COLOR" => $player_info["player_color"],
-        ]);
-      }
+    public function getGameName()
+    {
+        return "fluxx";
     }
-  }
+    public function build_page($viewArgs)
+    {
+        $template = self::getGameName() . "_" . self::getGameName();
+
+        // Get current player ID & all players info
+        global $g_user;
+        $current_player_id = $g_user->get_id();
+        $players = $this->game->loadPlayersBasicInfos();
+
+        // Translations
+        $this->tpl["MY_HAND"] = clienttranslate("My hand");
+        $this->tpl["MY_KEEPERS"] = clienttranslate("My keepers");
+        $this->tpl["HAND_COUNT"] = clienttranslate("# cards in hand");
+        $this->tpl["KEEPERS_COUNT"] = clienttranslate("# keepers on table");
+        $this->tpl["RULES"] = clienttranslate("Rules");
+        $this->tpl["GOAL"] = clienttranslate("Goal");
+
+        // This will inflate players keepers block
+        $player_info = $players[$current_player_id];
+        $this->tpl["CURRENT_PLAYER_ID"] = $current_player_id;
+        $this->tpl["CURRENT_PLAYER_COLOR"] = $player_info["player_color"];
+
+        $this->page->begin_block($template, "keepers");
+        foreach ($players as $player_id => $player_info) {
+            if ($player_id != $current_player_id) {
+                $this->page->insert_block("keepers", [
+                    "PLAYER_ID" => $player_id,
+                    "PLAYER_NAME" => $player_info["player_name"],
+                    "PLAYER_COLOR" => $player_info["player_color"],
+                ]);
+            }
+        }
+    }
 }

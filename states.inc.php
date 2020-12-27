@@ -51,98 +51,117 @@ method).
 
 // Define Constants
 if (!defined("STATE_DRAWCARDS")) {
-  define("GAME_SETUP", 1);
-  define("GAME_END", 99);
-  define("STATE_DRAWCARDS", 10);
-  define("STATE_PLAYCARDS", 20);
-  define("STATE_RESOLVEACTION", 30);
-  define("STATE_HANDLIMIT", 40);
-  define("STATE_KEEPERLIMIT", 50);
-  define("STATE_NEXTPLAYER", 60);    
+    define("GAME_SETUP", 1);
+    define("GAME_END", 99);
+    define("STATE_DRAWCARDS", 10);
+    define("STATE_PLAYCARDS", 20);
+    define("STATE_RESOLVEACTION", 30);
+    define("STATE_HANDLIMIT", 40);
+    define("STATE_KEEPERLIMIT", 50);
+    define("STATE_NEXTPLAYER", 60);
 }
 
 $machinestates = [
-  // The initial state. Please do not modify.
-  GAME_SETUP => [
-    "name" => "gameSetup",
-    "description" => "",
-    "type" => "manager",
-    "action" => "stGameSetup",
-    "transitions" => ["" => STATE_DRAWCARDS],
-  ],
-
-  STATE_DRAWCARDS => [
-    "name" => "cardsDraw",
-    "description" => "",
-    "type" => "game",
-    "action" => "stCardsDraw",
-    // "args" => "argsCardsDraw",
-    "transitions" => ["goPlayCards" => STATE_PLAYCARDS, "endGame" => GAME_END],
-  ],
-
-  STATE_PLAYCARDS => [
-    "name" => "cardsPlay",
-    "description" => clienttranslate('${actplayer} must play ${nb} card(s)'),
-    "descriptionmyturn" => clienttranslate('${you} must play ${nb} card(s)'),
-    "type" => "activeplayer",
-    "args" => "argsCardsPlay",
-    "possibleactions" => ["playCard"],
-    "transitions" => [
-      "enforceLimits" => STATE_HANDLIMIT,
-      "donePlayingCards" => STATE_HANDLIMIT,
-      "resolveActionCard" => STATE_RESOLVEACTION,
-      "continuePlay" => STATE_PLAYCARDS,
-      "endGame" => GAME_END,
+    // The initial state. Please do not modify.
+    GAME_SETUP => [
+        "name" => "gameSetup",
+        "description" => "",
+        "type" => "manager",
+        "action" => "stGameSetup",
+        "transitions" => ["" => STATE_DRAWCARDS],
     ],
-  ],
 
-  STATE_RESOLVEACTION => array(
-    "name" => "actionResolve",
-    "description" => clienttranslate('${actplayer} must resolve their action'),
-    "descriptionmyturn" => clienttranslate('${you} must resolve your action'),
-    "type" => "activeplayer",
-    "args" => "argResolveAction",
-    "action" => "stResolveAction",
-    "possibleactions" => ["resolveAction"],
-    "transitions" => [
-        "resolvedAction" => STATE_PLAYCARDS,
-        "donePlayingCards" => STATE_HANDLIMIT,
-        "endGame" => GAME_END
+    STATE_DRAWCARDS => [
+        "name" => "cardsDraw",
+        "description" => "",
+        "type" => "game",
+        "action" => "stCardsDraw",
+        // "args" => "argsCardsDraw",
+        "transitions" => [
+            "goPlayCards" => STATE_PLAYCARDS,
+            "endGame" => GAME_END,
+        ],
     ],
-  ),
 
-  STATE_HANDLIMIT => [
-    "name" => "handLimit",
-    "description" => clienttranslate('Other players must discard cards for Hand Limit ${limit}'),
-    "descriptionmyturn" => clienttranslate('${you} must discard ${nb} cards for Hand Limit ${limit}'),
-    "type" => "multipleactiveplayer",
-    "args" => "argHandLimit",
-    "action" => "stHandLimit",
-    "possibleactions" => ["discardCards"],
-    "transitions" => ["" => STATE_KEEPERLIMIT],
-  ],
+    STATE_PLAYCARDS => [
+        "name" => "cardsPlay",
+        "description" => clienttranslate(
+            '${actplayer} must play ${nb} card(s)'
+        ),
+        "descriptionmyturn" => clienttranslate(
+            '${you} must play ${nb} card(s)'
+        ),
+        "type" => "activeplayer",
+        "args" => "argsCardsPlay",
+        "possibleactions" => ["playCard"],
+        "transitions" => [
+            "enforceLimits" => STATE_HANDLIMIT,
+            "donePlayingCards" => STATE_HANDLIMIT,
+            "resolveActionCard" => STATE_RESOLVEACTION,
+            "continuePlay" => STATE_PLAYCARDS,
+            "endGame" => GAME_END,
+        ],
+    ],
 
-  STATE_KEEPERLIMIT => [
-    "name" => "keeperLimit",
-    "description" => clienttranslate('Other players must remove keepers for Keeper Limit ${limit}'),
-    "descriptionmyturn" => clienttranslate('${you} must remove ${nb} keepers for Keeper Limit ${limit}'),
-    "type" => "multipleactiveplayer",
-    "args" => "argKeeperLimit",
-    "action" => "stKeeperLimit",
-    "possibleactions" => ["discardKeepers"],
-    "transitions" => ["" => STATE_NEXTPLAYER],
-  ],
+    STATE_RESOLVEACTION => [
+        "name" => "actionResolve",
+        "description" => clienttranslate(
+            '${actplayer} must resolve their action'
+        ),
+        "descriptionmyturn" => clienttranslate(
+            '${you} must resolve your action'
+        ),
+        "type" => "activeplayer",
+        "args" => "argResolveAction",
+        "action" => "stResolveAction",
+        "possibleactions" => ["resolveAction"],
+        "transitions" => [
+            "resolvedAction" => STATE_PLAYCARDS,
+            "donePlayingCards" => STATE_HANDLIMIT,
+            "endGame" => GAME_END,
+        ],
+    ],
 
-  STATE_NEXTPLAYER => [
-    "name" => "nextPlayer",
-    "description" => "",
-    "type" => "game",
-    "action" => "stNextPlayer",
-    "updateGameProgression" => true,
-    "transitions" => ["nextPlayer" => STATE_DRAWCARDS],
-  ],
+    STATE_HANDLIMIT => [
+        "name" => "handLimit",
+        "description" => clienttranslate(
+            'Other players must discard cards for Hand Limit ${limit}'
+        ),
+        "descriptionmyturn" => clienttranslate(
+            '${you} must discard ${nb} cards for Hand Limit ${limit}'
+        ),
+        "type" => "multipleactiveplayer",
+        "args" => "argHandLimit",
+        "action" => "stHandLimit",
+        "possibleactions" => ["discardCards"],
+        "transitions" => ["" => STATE_KEEPERLIMIT],
+    ],
 
-  /*
+    STATE_KEEPERLIMIT => [
+        "name" => "keeperLimit",
+        "description" => clienttranslate(
+            'Other players must remove keepers for Keeper Limit ${limit}'
+        ),
+        "descriptionmyturn" => clienttranslate(
+            '${you} must remove ${nb} keepers for Keeper Limit ${limit}'
+        ),
+        "type" => "multipleactiveplayer",
+        "args" => "argKeeperLimit",
+        "action" => "stKeeperLimit",
+        "possibleactions" => ["discardKeepers"],
+        "transitions" => ["" => STATE_NEXTPLAYER],
+    ],
+
+    STATE_NEXTPLAYER => [
+        "name" => "nextPlayer",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextPlayer",
+        "updateGameProgression" => true,
+        "transitions" => ["nextPlayer" => STATE_DRAWCARDS],
+    ],
+
+    /*
 Examples:
 
 2 => array(
@@ -165,13 +184,13 @@ Examples:
 
  */
 
-  // Final state.
-  // Please do not modify (and do not overload action/args methods).
-  99 => [
-    "name" => "gameEnd",
-    "description" => clienttranslate("End of game"),
-    "type" => "manager",
-    "action" => "stGameEnd",
-    "args" => "argGameEnd",
-  ],
+    // Final state.
+    // Please do not modify (and do not overload action/args methods).
+    99 => [
+        "name" => "gameEnd",
+        "description" => clienttranslate("End of game"),
+        "type" => "manager",
+        "action" => "stGameEnd",
+        "args" => "argGameEnd",
+    ],
 ];

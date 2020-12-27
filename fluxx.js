@@ -217,8 +217,8 @@ define([
       console.log("onUpdateActionButtons: " + stateName);
 
       if (this.isCurrentPlayerActive()) {
-        switch ( stateName )
-/*               
+        switch (stateName) {
+          /*               
                  Example:
  
                  case 'myGameState':
@@ -230,15 +230,22 @@ define([
                     this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
                     break;
 */
-        {
-          case 'handLimit':
-          // Discard selected cards from hand
-              this.addActionButton('button_1', _('Discard selected'), 'onRemoveCardsFromHand');
-              break;
-          case 'keeperLimit':
-          // Remove keepers from play
-              this.addActionButton('button_1', _('Remove selected'), 'onRemoveKeepersFromPlay');
-              break;
+          case "handLimit":
+            // Discard selected cards from hand
+            this.addActionButton(
+              "button_1",
+              _("Discard selected"),
+              "onRemoveCardsFromHand"
+            );
+            break;
+          case "keeperLimit":
+            // Remove keepers from play
+            this.addActionButton(
+              "button_1",
+              _("Remove selected"),
+              "onRemoveKeepersFromPlay"
+            );
+            break;
         }
       }
     },
@@ -394,27 +401,27 @@ define([
      * Convenience method for executing ajax actions
      * Ensures lock is always set
      */
-    ajaxAction: function (action, args)
-    {
-        if (!args) {
-            args = [];
-        }
-        if (!args.hasOwnProperty('lock')) {
-            args.lock = true;
-        }
-        var name = this.game_name;
-        this.ajaxcall('/' + name + '/' + name + '/' + action + '.html',
-          args, 
-          this, 
-          function (result) {},
-          function (is_error) {}
-          );
+    ajaxAction: function (action, args) {
+      if (!args) {
+        args = [];
+      }
+      if (!args.hasOwnProperty("lock")) {
+        args.lock = true;
+      }
+      var name = this.game_name;
+      this.ajaxcall(
+        "/" + name + "/" + name + "/" + action + ".html",
+        args,
+        this,
+        function (result) {},
+        function (is_error) {}
+      );
     },
 
     onSelectHandCard: function () {
       var items = this.handStock.getSelectedItems();
       var actionPlay = "playCard";
-      var actionDiscard= "discardCards";
+      var actionDiscard = "discardCards";
 
       console.log("onSelectHandCard", items, this.currentState);
 
@@ -426,7 +433,7 @@ define([
         // Play a card
         this.ajaxAction(actionPlay, {
           card_id: items[0].id,
-          card_definition_id: items[0].type
+          card_definition_id: items[0].type,
         });
 
         this.handStock.unselectAll();
@@ -443,41 +450,45 @@ define([
     },
 
     onKeeperSelectionChanged: function () {
-      var actionDiscard= 'discardKeepers';
-      if(this.checkAction(actionDiscard, true)){
-          // selecting cards to be discarded
+      var actionDiscard = "discardKeepers";
+      if (this.checkAction(actionDiscard, true)) {
+        // selecting cards to be discarded
       } else {
-          // nothing can be done now, ignore selections
-          for (const player_id in this.keepersStock) {
-              this.keepersStock[player_id].unselectAll();
-          }
+        // nothing can be done now, ignore selections
+        for (const player_id in this.keepersStock) {
+          this.keepersStock[player_id].unselectAll();
+        }
       }
     },
 
-    onRemoveCardsFromHand : function () {
+    onRemoveCardsFromHand: function () {
       var items = this.handStock.getSelectedItems();
-      var arg_card_ids = '';
+      var arg_card_ids = "";
       for (var i in items) {
-          console.log("discard from hand: "+items[i].id+", type: "+items[i].type);
-          arg_card_ids += items[i].id + ';';                
+        console.log(
+          "discard from hand: " + items[i].id + ", type: " + items[i].type
+        );
+        arg_card_ids += items[i].id + ";";
       }
-      var actionDiscard = 'discardCards';
+      var actionDiscard = "discardCards";
       this.ajaxAction(actionDiscard, {
-          card_ids : arg_card_ids
+        card_ids: arg_card_ids,
       });
     },
 
-    onRemoveKeepersFromPlay : function () {
-        var items = this.keepersStock[this.player_id].getSelectedItems();
-        var arg_card_ids = '';
-        for (var i in items) {
-            console.log("discard from keepers: "+items[i].id+", type: "+items[i].type);
-            arg_card_ids += items[i].id + ';';
-        }
-        var actionDiscard = 'discardKeepers';
-        this.ajaxAction(actionDiscard, {
-            card_ids : arg_card_ids
-        });            
+    onRemoveKeepersFromPlay: function () {
+      var items = this.keepersStock[this.player_id].getSelectedItems();
+      var arg_card_ids = "";
+      for (var i in items) {
+        console.log(
+          "discard from keepers: " + items[i].id + ", type: " + items[i].type
+        );
+        arg_card_ids += items[i].id + ";";
+      }
+      var actionDiscard = "discardKeepers";
+      this.ajaxAction(actionDiscard, {
+        card_ids: arg_card_ids,
+      });
     },
 
     ///////////////////////////////////////////////////
@@ -504,7 +515,11 @@ define([
 
       dojo.subscribe("actionPlayed", this, "notif_actionPlayed");
       dojo.subscribe("discardedFromHand", this, "notif_discardedFromHand");
-      dojo.subscribe("discardedFromKeepers", this, "notif_discardedFromKeepers");
+      dojo.subscribe(
+        "discardedFromKeepers",
+        this,
+        "notif_discardedFromKeepers"
+      );
 
       dojo.subscribe("newScores", this, "notif_newScores");
     },
@@ -560,7 +575,9 @@ define([
       var player_id = notif.args.player_id;
       var card_id = notif.args.card;
       var handCount = notif.args.handCount;
-      // @TODO
+
+      this.playCard(player_id, card_id, this.discardStock);
+      this.setPlayerBoardHandCount(player_id, handCount);
     },
 
     notif_discardedFromHand: function (notif) {
@@ -568,14 +585,19 @@ define([
       var discardedHandCards = notif.args.cards;
       var discardCount = notif.args.discardCount;
       var handCount = notif.args.handCount;
-      // @TODO
+
+      this.setPlayerBoardHandCount(player_id, handCount);
+      this.setDiscardCount(discardCount);
+      this.discardCards(discardedHandCards, this.handStock);
     },
 
     notif_discardedFromKeepers: function (notif) {
       var player_id = notif.args.player_id;
       var discardedKeepers = notif.args.cards;
       var discardCount = notif.args.discardCount;
-      // @TODO
+
+      this.setDiscardCount(discardCount);
+      this.discardCards(discardedKeepers, this.handStock);
     },
 
     notif_newScores: function (notif) {
