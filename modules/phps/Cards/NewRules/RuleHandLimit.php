@@ -8,21 +8,29 @@ use Fluxx\Game\Utils;
 class RuleHandLimit extends RuleCard
 {
     public function __construct($cardId, $uniqueId)
-	{
+    {
         parent::__construct($cardId, $uniqueId);
     }
 
-    public function getRuleType() { return "handLimit"; }
+    public function getRuleType()
+    {
+        return "handLimit";
+    }
 
     protected $handLimit;
 
-    public function setNewHandLimit($newValue)	 { 
+    public function setNewHandLimit($newValue)
+    {
         $this->handLimit = $newValue;
     }
 
-    public function usedInPlayerTurn()	 { return false; }
+    public function usedInPlayerTurn()
+    {
+        return false;
+    }
 
-	public function immediateEffectOnPlay($player) { 
+    public function immediateEffectOnPlay($player)
+    {
         // current Hand Limit is changed immediately
         $this->adaptHandLimit($player, $this->handLimit);
 
@@ -31,12 +39,14 @@ class RuleHandLimit extends RuleCard
         // They should be enforced on other players immediately during the turn.
     }
 
-    public function immediateEffectOnDiscard($player) { 
+    public function immediateEffectOnDiscard($player)
+    {
         // reset to Basic Hand Limit = none
         $this->adaptHandLimit($player, -1);
     }
 
-    protected function adaptHandLimit($player, $newValue) {
+    protected function adaptHandLimit($player, $newValue)
+    {
         $oldValue = Utils::getGame()->getGameStateValue("handLimit");
         // discard any other hand limit rules
         Utils::getGame()->discardRuleCardsForType("handLimit");

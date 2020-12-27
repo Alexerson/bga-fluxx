@@ -8,25 +8,31 @@ use Fluxx\Game\Utils;
 class ActionDummy extends ActionCard
 {
     public function __construct($cardId, $uniqueId)
-	{
+    {
         parent::__construct($cardId, $uniqueId);
     }
 
-    public function needsInteraction()	 { return false; }
+    public function needsInteraction()
+    {
+        return false;
+    }
 
-    public function playFromHand($player) {
+    public function playFromHand($player)
+    {
         parent::playFromHand($player);
     }
 
-	public function immediateEffectOnPlay($player) { 
-        
-        
+    public function immediateEffectOnPlay($player)
+    {
         $cardUniqueId = $this->uniqueId;
 
-        Utils::getGame()->notifyAllPlayers( "actionNotImplemented", 
-            clienttranslate( 'Action <b>${unique_id}<b> not yet implemented' ), [
-            'unique_id' => $cardUniqueId
-        ]);
+        Utils::getGame()->notifyAllPlayers(
+            "actionNotImplemented",
+            clienttranslate('Action <b>${unique_id}<b> not yet implemented'),
+            [
+                "unique_id" => $cardUniqueId,
+            ]
+        );
 
         parent::immediateEffectOnPlay($player);
     }

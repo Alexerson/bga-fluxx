@@ -8,21 +8,29 @@ use Fluxx\Game\Utils;
 class RuleKeeperLimit extends RuleCard
 {
     public function __construct($cardId, $uniqueId)
-	{
+    {
         parent::__construct($cardId, $uniqueId);
     }
 
-    public function getRuleType() { return "keepersLimit"; }
+    public function getRuleType()
+    {
+        return "keepersLimit";
+    }
 
     protected $keeperLimit;
 
-    public function setNewKeeperLimit($newValue)	 { 
+    public function setNewKeeperLimit($newValue)
+    {
         $this->keeperLimit = $newValue;
     }
 
-    public function usedInPlayerTurn()	 { return false; }
+    public function usedInPlayerTurn()
+    {
+        return false;
+    }
 
-	public function immediateEffectOnPlay($player) { 
+    public function immediateEffectOnPlay($player)
+    {
         // current Keeper Limit is changed immediately
         $this->adaptKeeperLimit($player, $this->keeperLimit);
 
@@ -31,16 +39,18 @@ class RuleKeeperLimit extends RuleCard
         // They should be enforced on other players immediately during the turn.
     }
 
-    public function immediateEffectOnDiscard($player) { 
+    public function immediateEffectOnDiscard($player)
+    {
         // reset to Basic Keeper Limit = none
         $this->adaptKeeperLimit($player, -1);
     }
 
-    protected function adaptKeeperLimit($player, $newValue) {
+    protected function adaptKeeperLimit($player, $newValue)
+    {
         $oldValue = Utils::getGame()->getGameStateValue("keepersLimit");
         // discard any other keeper limit rules
         Utils::getGame()->discardRuleCardsForType("keepersLimit");
         // set new play rule
-        Utils::getGame()->setGameStateValue("keepersLimit", $newValue);        
+        Utils::getGame()->setGameStateValue("keepersLimit", $newValue);
     }
 }
